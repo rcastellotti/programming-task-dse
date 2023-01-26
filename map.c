@@ -32,7 +32,6 @@ hashmap *hashmap_create(int size)
 void hashmap_put(struct hashmap *map, char *key, char *value)
 {
     unsigned int h = hash(key) % map->size;
-    log_debug("key: %s results in hash: %i", key, h);
     pthread_rwlock_wrlock(&rwlock);
 
     if (strcmp(map->buckets[h]->head->key, "dead") == 0)

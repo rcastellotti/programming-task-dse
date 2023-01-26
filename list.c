@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "list.h"
 #include <string.h>
+
 List *list_create()
 {
     List *list = malloc(sizeof(List));
@@ -53,24 +54,6 @@ void list_add(List *list, char *key, char *value)
     }
 }
 
-void delete(List *list, char *key)
-{
-    Node *current = list->head;
-    Node *previous = current;
-    while (current != NULL)
-    {
-        if (current->key == key)
-        {
-            previous->next = current->next;
-            if (current == list->head)
-                list->head = current->next;
-            free(current);
-            return;
-        }
-        previous = current;
-        current = current->next;
-    }
-}
 char *list_get(List *list, char *key)
 {
     Node *current = list->head;
@@ -79,10 +62,8 @@ char *list_get(List *list, char *key)
     {
         if (current->key == key)
         {
-            previous->next = current->next;
             if (current == list->head)
-                list->head = current->next;
-            return current->value;
+                return current->value;
         }
         previous = current;
         current = current->next;

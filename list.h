@@ -19,7 +19,6 @@ struct list
 
 List *list_create();
 void list_add(List *list, char *key, char *value);
-void delete(List *list, char *key);
 char *list_get(List *list, char *key);
 void list_print(List *list);
 void list_destroy(List *list);

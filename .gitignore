@@ -5,3 +5,4 @@ server
 client_debug
 server_debug
 *.dSYM
+a.out
