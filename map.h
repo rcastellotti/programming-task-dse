@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "list.h"
+#ifndef MAP_H
+#define MAP_H
 
 typedef struct bucket bucket;
 typedef struct hashmap hashmap;
@@ -25,3 +27,4 @@ char *hashmap_get(hashmap *map, char *key);
 void hashmap_remove(hashmap *map, char *key);
 void hashmap_print(hashmap *map);
 
+#endif

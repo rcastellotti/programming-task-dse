@@ -3,7 +3,6 @@
 #define LIST_H
 
 typedef struct node Node;
-typedef struct list List;
 
 struct node
 {
@@ -12,11 +11,11 @@ struct node
     struct node *next;
 };
 
-struct list
+typedef struct
 {
     pthread_rwlock_t lock;
     Node *head;
-};
+} List;
 
 List *list_create();
 void list_add(List *list, char *key, char *value);
