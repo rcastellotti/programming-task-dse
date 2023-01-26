@@ -29,11 +29,12 @@ void list_print(List *list)
 void list_add(List *list, char *key, char *value)
 {
     Node *current = NULL;
+    Node *newNode = malloc(sizeof(Node));
+    newNode->key = key;
+    newNode->value = value;
     if (list->head == NULL)
     {
-        Node *newNode = malloc(sizeof(Node));
-        newNode->key = key;
-        newNode->value = value;
+
         newNode->next = NULL;
         list->head = newNode;
     }
@@ -41,15 +42,11 @@ void list_add(List *list, char *key, char *value)
     {
         current = list->head;
         // handling duplicates
-        while (current->next != NULL || strcmp(current->key, key) == 0)
+        if (strcmp(current->key, key) == 0)
         {
             current->value = value;
             return;
-            current = current->next;
         }
-        Node *newNode = malloc(sizeof(Node));
-        newNode->key = key;
-        newNode->value = value;
         newNode->next = NULL;
         current->next = newNode;
     }
