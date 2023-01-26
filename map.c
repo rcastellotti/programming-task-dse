@@ -14,11 +14,12 @@ unsigned int hash(char *key)
     int c;
     while ((c = *key++))
         hash = ((hash << 5) + hash) + c;
-    return hash % HASHMAP_SIZE;
+    return hash;
 }
 
 hashmap *hashmap_create(int size)
 {
+
     hashmap *map = malloc(size * sizeof(List *));
     map->size = size;
     for (int i = 0; i < map->size; i++)
@@ -33,7 +34,6 @@ void hashmap_put(struct hashmap *map, char *key, char *value)
 {
     unsigned int h = hash(key) % map->size;
     pthread_rwlock_wrlock(&rwlock);
-
     if (strcmp(map->buckets[h]->head->key, "dead") == 0)
     {
         map->buckets[h]->head->key = key;
@@ -70,7 +70,7 @@ void hashmap_print(struct hashmap *map)
     for (int i = 0; i < map->size; i++)
     {
         printf("%i :: ", i);
-        list_print(map->buckets[i]);
+        list_print(map->buckets[i]);    
         printf("\n");
     }
 }

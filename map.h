@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "list.h"
-#define HASHMAP_SIZE 10
 
 typedef struct bucket bucket;
 typedef struct hashmap hashmap;
