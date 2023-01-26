@@ -63,7 +63,8 @@ char *list_get(List *list, char *key)
     {
         if (current->next == NULL)
         {
-return current->value;       }
+            return current->value;
+        }
         else
         {
             current = current->next;
