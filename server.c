@@ -21,7 +21,7 @@ typedef struct buffer
 
 void parse(hashmap *m, char *command)
 {
-
+    log_debug("received command: %s", command);
     int i = 0;
     char arr[3][50];
     char *pch = strtok(command, " ");
@@ -33,22 +33,20 @@ void parse(hashmap *m, char *command)
     }
 
     char *key = arr[1];
+
     if (strcmp(arr[0], "insert") == 0)
     {
         char *value = arr[2];
-        log_debug("received insert command: key: %s, value: %s", arr[1], arr[2]);
         hashmap_put(m, strdup(key), strdup(value));
         log_info("inserted k: %s -> v: %s", key, value);
     }
     else if (strcmp(arr[0], "delete") == 0)
     {
-        log_debug("received delete command: key %s", arr[1]);
         hashmap_remove(m, key);
         log_info("removed k: %s", key);
     }
     else if (strcmp(arr[0], "read") == 0)
     {
-        log_debug("received read command: key %s", arr[1]);
         char *res = hashmap_get(m, key);
         log_info("read k: %s -> v: %s", key, res);
     }
@@ -101,7 +99,6 @@ int main(int argc, char **argv)
         while (shm->status == 1 && strlen(shm->data) > 1)
         {
             shm->data[strlen(shm->data) - 1] = '\0'; // just to fix the formatting in the output
-            log_debug("received: %s", shm->data);
             parse(m, shm->data);
             shm->status = 0;
         }
