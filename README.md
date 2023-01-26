@@ -26,7 +26,7 @@ Please only use standard libraries. For those not specified, implement as approp
 
 + I decided to use "dead" as a null value for the hashmap
 + Collisions are handled using a linked list, if the key is already present we update the value
-+ I used [rxi/log.c](https://github.com/rxi.log.c) to have a prettier logging, I don't think this is a violation of "only use standard libraries"
++ I used [rxi/log.c](https://github.com/rxi/log.c) to have a prettier logging, I don't think this is a violation of "only use standard libraries"
 + I am acquiring locks only on buckets in order to not block the entire hashmap
 + I asked chatGPT to generate a simple hashing function, it's far from being a good hash function, but this is intended, as we need to test for collisions
 
