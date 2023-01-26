@@ -33,7 +33,7 @@ hashmap *hashmap_create(int size)
 void hashmap_put(struct hashmap *map, char *key, char *value)
 {
     unsigned int h = hash(key) % map->size;
-    pthread_rwlock_wrlock(&rwlock);
+    pthread_rwlock_wrlock(&map->buckets[h]->lock);
     if (strcmp(map->buckets[h]->head->key, "dead") == 0)
     {
         map->buckets[h]->head->key = key;
@@ -42,27 +42,27 @@ void hashmap_put(struct hashmap *map, char *key, char *value)
     }
 
     list_add(map->buckets[h], key, value);
-    pthread_rwlock_unlock(&rwlock);
+    pthread_rwlock_unlock(&map->buckets[h]->lock);
 }
 
 char *hashmap_get(struct hashmap *map, char *key)
 {
     int h = hash(key) % map->size;
-    pthread_rwlock_rdlock(&rwlock);
+    pthread_rwlock_rdlock(&map->buckets[h]->lock);
     // the key is in this bucket, we only have to find it
     char *value = list_get(map->buckets[h], key);
-    pthread_rwlock_unlock(&rwlock);
+    pthread_rwlock_unlock(&map->buckets[h]->lock);
     return value;
 }
 
 void hashmap_remove(struct hashmap *map, char *key)
 {
     int h = hash(key) % map->size;
-    pthread_rwlock_wrlock(&rwlock);
+    pthread_rwlock_wrlock(&map->buckets[h]->lock);
     list_destroy(map->buckets[h]);
     map->buckets[h] = list_create();
     list_add(map->buckets[h], "dead", "dead");
-    pthread_rwlock_unlock(&rwlock);
+    pthread_rwlock_unlock(&map->buckets[h]->lock);
 }
 
 void hashmap_print(struct hashmap *map)

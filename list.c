@@ -3,6 +3,7 @@
 #include "list.h"
 #include <string.h>
 #include "log.h"
+#include <pthread.h>
 List *list_create()
 {
     List *list = malloc(sizeof(List));

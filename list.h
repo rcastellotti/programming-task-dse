@@ -1,8 +1,8 @@
-#ifndef LINKEDLIST_HEADER
-#define LINKEDLIST_HEADER
+#include <pthread.h>
+#ifndef LIST_H
+#define LIST_H
 
 typedef struct node Node;
-
 typedef struct list List;
 
 struct node
@@ -14,6 +14,7 @@ struct node
 
 struct list
 {
+    pthread_rwlock_t lock;
     Node *head;
 };
 
