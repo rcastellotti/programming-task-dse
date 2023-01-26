@@ -1,5 +1,5 @@
 FLAGS=  -Wall -Wextra -pedantic -Werror --ansi -DLOG_USE_COLOR -lpthread --std=gnu11 
-DEPS= map.c log.c
+DEPS= map.c log.c list.c
 
 all: client server 
 client: client.c $(DEPS)

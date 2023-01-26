@@ -2,14 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include "map.h"
+#include "list.h"
 #include "log.h"
 #include <pthread.h>
 
 pthread_rwlock_t rwlock = PTHREAD_RWLOCK_INITIALIZER;
 
-int hash(char *key)
+unsigned int hash(char *key)
 {
-    int hash = 5381;
+    unsigned int hash = 5381;
     int c;
     while ((c = *key++))
         hash = ((hash << 5) + hash) + c;
@@ -18,101 +19,59 @@ int hash(char *key)
 
 hashmap *hashmap_create(int size)
 {
-    hashmap *m = malloc(sizeof(hashmap));
-    m->size = size;
-    for (int i = 0; i < size; i++)
+    hashmap *map = malloc(size * sizeof(List *));
+    map->size = size;
+    for (int i = 0; i < map->size; i++)
     {
-        bucket *new_bucket = (struct bucket *)malloc(sizeof(bucket));
-        new_bucket->key = "dead";
-        new_bucket->value = "dead";
-        new_bucket->next = m->first;
-        m->first = new_bucket;
+        map->buckets[i] = list_create();
+        list_add(map->buckets[i], "dead", "dead");
     }
-    m->last = NULL;
-    return m;
+    return map;
 }
 
 void hashmap_put(struct hashmap *map, char *key, char *value)
 {
-    int h = hash(key) % map->size;
+    unsigned int h = hash(key) % map->size;
+    log_debug("key: %s results in hash: %i", key, h);
     pthread_rwlock_wrlock(&rwlock);
-    bucket *counter = map->first;
-    log_debug("inserting  %s ->  %s current->key is: %s ", key, value, counter->key);
 
-    for (int cont = 0; cont < h; cont++)
+    if (strcmp(map->buckets[h]->head->key, "dead") == 0)
     {
-        counter = counter->next;
+        map->buckets[h]->head->key = key;
+        map->buckets[h]->head->value = value;
+        return;
     }
-    // collisions and empty list
-    if (strcmp(counter->key, "dead") == 0 || strcmp(counter->key, key) == 0)
-    {
-        counter->key = key;
-        counter->value = value;
-    }
-    else
-    {
-        bucket *new_bucket = (struct bucket *)malloc(sizeof(bucket));
-        new_bucket->key = key;
-        new_bucket->value = value;
-        new_bucket->next = counter->bucketlist;
-        counter->bucketlist = new_bucket;
-    }
+
+    list_add(map->buckets[h], key, value);
     pthread_rwlock_unlock(&rwlock);
 }
 
 char *hashmap_get(struct hashmap *map, char *key)
 {
-    bucket *counter = map->first;
     int h = hash(key) % map->size;
     pthread_rwlock_rdlock(&rwlock);
-    for (int cont = 0; cont < h; cont++)
-    {
-        counter = counter->next;
-    }
+    // the key is in this bucket, we only have to find it
+    char *value = list_get(map->buckets[h], key);
     pthread_rwlock_unlock(&rwlock);
-
-    return counter->value;
+    return value;
 }
 
 void hashmap_remove(struct hashmap *map, char *key)
 {
-    bucket *counter = map->first;
-
     int h = hash(key) % map->size;
     pthread_rwlock_wrlock(&rwlock);
-
-    for (int cont = 0; cont < h; cont++)
-    {
-        counter = counter->next;
-    }
-    counter->key = "dead";
-    counter->value = "dead";
+    list_destroy(map->buckets[h]);
+    map->buckets[h] = list_create();
+    list_add(map->buckets[h], "dead", "dead");
     pthread_rwlock_unlock(&rwlock);
 }
 
 void hashmap_print(struct hashmap *map)
 {
-
-    bucket *counter = map->first;
-
-    int conteggio = 0;
-    while (counter != NULL)
+    for (int i = 0; i < map->size; i++)
     {
-
-        printf("%i :: ", conteggio);
-        printf("%s -> ", counter->key);
-
-        printf("%s ", counter->value);
-        bucket *counterlist = counter->bucketlist;
-        while (counterlist != NULL)
-        {
-            printf(" :: ");
-            printf("%s -> ", counterlist->key);
-            printf("%s", counterlist->value);
-            counterlist = counterlist->next;
-        }
+        printf("%i :: ", i);
+        list_print(map->buckets[i]);
         printf("\n");
-        counter = counter->next;
-        conteggio++;
     }
 }
