@@ -71,5 +71,3 @@ int main()
     hashmap_print(m);
 }
 ```
-
-Thanks []
