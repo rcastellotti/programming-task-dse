@@ -17,12 +17,44 @@ typedef struct buffer
     int status;
 } Buffer;
 
+typedef struct
+{
+    char *key;
+    char *value;
+    hashmap *map;
+} worker_hashmap_struct;
 
+void *worker_put(void *args)
+{
+    worker_hashmap_struct *real_args = args;
+    hashmap_put(real_args->map, real_args->key, real_args->value);
+    log_info("inserted k: %s -> v: %s", real_args->key, real_args->value);
+
+    return NULL;
+}
+void *worker_get(void *args)
+{
+    worker_hashmap_struct *real_args = args;
+    real_args->value = hashmap_get(real_args->map, real_args->key);
+    log_info("read k: %s -> v: %s", real_args->key, real_args->value);
+
+    return NULL;
+}
+void *worker_remove(void *args)
+{
+    worker_hashmap_struct *real_args = args;
+    hashmap_remove(real_args->map, real_args->key);
+    log_info("removed k: %s", real_args->key);
+
+    return NULL;
+}
 
 void parse(hashmap *m, char *command)
 {
     log_debug("received command: %s", command);
     int i = 0;
+    pthread_t t = NULL;
+
     char arr[3][50];
     char *pch = strtok(command, " ");
     while (pch != NULL)
@@ -32,23 +64,50 @@ void parse(hashmap *m, char *command)
         pch = strtok(NULL, " ");
     }
 
-    char *key = arr[1];
+    worker_hashmap_struct *args = malloc(sizeof *args);
+    args->key = arr[1];
+    args->map = m;
 
-    if (strcmp(arr[0], "insert") == 0)
+    if (strcmp(arr[0], "put") == 0)
     {
-        char *value = arr[2];
-        hashmap_put(m, strdup(key), strdup(value));
-        log_info("inserted k: %s -> v: %s", key, value);
+        args->value = arr[2];
+        if (pthread_create(&t, NULL, worker_put, args))
+        {
+            perror("Cannot create thread\n");
+            exit(1);
+        }
+        if (pthread_join(t, NULL))
+        {
+            fprintf(stderr, "Cannot join thread\n");
+            exit(1);
+        }
     }
-    else if (strcmp(arr[0], "delete") == 0)
+    else if (strcmp(arr[0], "remove") == 0)
     {
-        hashmap_remove(m, key);
-        log_info("removed k: %s", key);
+        args->value = arr[2];
+        if (pthread_create(&t, NULL, worker_remove, args))
+        {
+            perror("Cannot create thread\n");
+            exit(1);
+        }
+        if (pthread_join(t, NULL))
+        {
+            fprintf(stderr, "Cannot join thread\n");
+            exit(1);
+        }
     }
-    else if (strcmp(arr[0], "read") == 0)
+    else if (strcmp(arr[0], "get") == 0)
     {
-        char *res = hashmap_get(m, key);
-        log_info("read k: %s -> v: %s", key, res);
+        if (pthread_create(&t, NULL, worker_get, args))
+        {
+            perror("Cannot create thread\n");
+            exit(1);
+        }
+        if (pthread_join(t, NULL))
+        {
+            fprintf(stderr, "Cannot join thread\n");
+            exit(1);
+        }
     }
     else if (strcmp(arr[0], "print") == 0)
     {
@@ -103,6 +162,7 @@ int main(int argc, char **argv)
             shm->status = 0;
         }
     }
+
     if (shmdt((void *)shm) == -1)
     {
         perror("error: shmdt");

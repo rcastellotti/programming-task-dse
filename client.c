@@ -19,7 +19,7 @@ int main()
 {
     printf("usage:\n");
     printf("  send a command in this form: <operation> <key> <value>\n");
-    printf("  example commands: `insert distsys 10`, `read distsys`, `delete distsys`, `print`\n");
+    printf("  example commands: `put distsys 10`, `get distsys`, `remove distsys`, `print`\n");
     int shmid;
     Buffer *shm;
     key_t key;

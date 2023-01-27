@@ -20,7 +20,7 @@ unsigned int hash(char *key)
 hashmap *hashmap_create(int size)
 {
 
-    hashmap *map = malloc(size * sizeof(List *));
+    hashmap *map = malloc(size * sizeof(List ));
     map->size = size;
     for (int i = 0; i < map->size; i++)
     {
