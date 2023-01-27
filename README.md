@@ -1,6 +1,6 @@
 # programming-task-dse
 
-This repository contains a programming task the [Distributed Systems & Operating Systems](https://dse.in.tum.de) gave me to test my skills before discussing a guided research project
+This repository contains a programming task the [Distributed Systems & Operating Systems](https://dse.in.tum.de) chair gave me to test my skills before discussing a guided research project.
 ## Instructions
 
 -  build with `make`
