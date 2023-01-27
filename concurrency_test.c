@@ -44,7 +44,6 @@ void *worker_get(void *args)
 void *worker_remove(void *args)
 {
     worker_hashmap_struct *real_args = args;
-    printf("vuoi cancellare il ciollazzio %s\n",real_args->key);
     hashmap_remove(real_args->map, real_args->key);
     printf("removed k: %s\n", real_args->key);
     return NULL;
