@@ -6,3 +6,4 @@ client_debug
 server_debug
 *.dSYM
 a.out
+concurrency_test

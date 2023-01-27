@@ -20,4 +20,4 @@ concurrency:
 	$(CC) concurrency_test.c $(DEPS) -g -lpthread -o concurrency_test
 
 clean:
-	rm -f server && rm -f client && rm -f server_debug && rm -f client_debug && rm -rf *.dSYM
+	rm -f server && rm -f client && rm -f server_debug && rm -f client_debug && rm -rf *.dSYM && rm -rf concurrency_test
